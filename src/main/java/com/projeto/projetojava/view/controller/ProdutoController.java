@@ -1,4 +1,4 @@
-package com.projeto.projetojava.controller;
+package com.projeto.projetojava.view.controller;
 
 import java.util.List;
 import java.util.Optional;
