@@ -20,7 +20,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.projeto.projetojava.model.Produto;
 import com.projeto.projetojava.services.ProdutoService;
 import com.projeto.projetojava.shared.ProdutoDTO;
+import com.projeto.projetojava.view.model.ProdutoRequest;
 import com.projeto.projetojava.view.model.ProdutoResponse;
+
+import ch.qos.logback.core.model.Model;
 
 @RestController
 @RequestMapping("/api/produtos")
@@ -59,18 +62,31 @@ public class ProdutoController {
     }
 
     @PostMapping
-    public Produto adicionar(@RequestBody Produto produto) {
-        return produtoService.adicionar(produto);
+    public ResponseEntity<ProdutoResponse> adicionar(@RequestBody ProdutoRequest produtoReq) {
+        ModelMapper mapper = new ModelMapper();
+
+        ProdutoDTO produtoDto = mapper.map(produtoReq, ProdutoDTO.class);
+
+        produtoDto = produtoService.adicionar(produtoDto);
+
+        return new ResponseEntity<>(mapper.map(produtoDto, ProdutoResponse.class), HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{id}")
-    public String deletar(@PathVariable Integer id) {
+    public ResponseEntity<?> deletar(@PathVariable Integer id) {
         produtoService.deletar(id);
-        return "Produto com id: " + id + " foi deletado com sucesso!";
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @PutMapping("/{id}")
-    public Produto atualizar(@RequestBody Produto produto, @PathVariable Integer id) {
-        return produtoService.atualizar(id, produto);
+    public ResponseEntity<ProdutoResponse> atualizar(@RequestBody ProdutoRequest produtoReq, @PathVariable Integer id) {
+
+        ModelMapper mapper = new ModelMapper();
+
+        ProdutoDTO produtoDto = mapper.map(produtoReq, ProdutoDTO.class);
+
+        produtoDto = produtoService.atualizar(id, produtoDto);
+
+        return new ResponseEntity<>(mapper.map(produtoDto, ProdutoResponse.class), HttpStatus.OK);
     }
 }
